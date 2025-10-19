@@ -2,7 +2,7 @@ from configparser import ConfigParser
 from tkinter import filedialog
 import aiomysql,asyncio
 import logging,os,importlib,sys,subprocess,socket
-from typing import Optional
+from typing import Optional,List,Tuple,Any
 logger = logging.getLogger("msql_logger")
 logger.setLevel(logging.INFO)
 if not logger.hasHandlers():
