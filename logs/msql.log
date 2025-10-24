@@ -1,0 +1,85 @@
+2025-10-25 00:01:37,629 | PID:3541 | INFO | Connected to MySQL [161.248.147.127:3306] - DB: core
+2025-10-25 00:01:37,636 | PID:3541 | INFO | Saved database config: [core]
+2025-10-25 00:01:37,636 | PID:3541 | INFO | Connection established and config saved.
+2025-10-25 00:01:37,637 | PID:3541 | INFO | Loaded connection from config: Config/configdb.cfg
+2025-10-25 00:01:37,637 | PID:3541 | INFO | Connected to MySQL [161.248.147.127:3306] - DB: guild
+2025-10-25 00:01:37,638 | PID:3541 | INFO | Saved database config: [guild]
+2025-10-25 00:01:37,639 | PID:3541 | INFO | Connection established and config saved.
+2025-10-25 00:01:37,639 | PID:3541 | INFO | Loaded connection from config: Config/configdb.cfg
+2025-10-25 00:01:37,669 | PID:3541 | INFO | [SELECT] 4 rows returned.
+2025-10-25 00:01:37,670 | PID:3541 | ERROR | [EXECUTE ERROR] (1146, "Table 'guild.voice_user' doesn't exist")
+Traceback (most recent call last):
+  File "/home/songjag/Màn hình nền/CustomAiomysql/Caiosql/Caiosql.py", line 135, in execute
+    await cur.execute(query, params)
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/cursors.py", line 239, in execute
+    await self._query(query)
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/cursors.py", line 457, in _query
+    await conn.query(q)
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/connection.py", line 469, in query
+    await self._read_query_result(unbuffered=unbuffered)
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/connection.py", line 683, in _read_query_result
+    await result.read()
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/connection.py", line 1164, in read
+    first_packet = await self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/connection.py", line 652, in _read_packet
+    packet.raise_for_error()
+  File "/var/data/python/lib/python3.12/site-packages/pymysql/protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "/var/data/python/lib/python3.12/site-packages/pymysql/err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1146, "Table 'guild.voice_user' doesn't exist")
+2025-10-25 00:01:37,709 | PID:3541 | ERROR | [EXECUTE ERROR] (1146, "Table 'guild.voice_user' doesn't exist")
+Traceback (most recent call last):
+  File "/home/songjag/Màn hình nền/CustomAiomysql/Caiosql/Caiosql.py", line 135, in execute
+    await cur.execute(query, params)
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/cursors.py", line 239, in execute
+    await self._query(query)
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/cursors.py", line 457, in _query
+    await conn.query(q)
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/connection.py", line 469, in query
+    await self._read_query_result(unbuffered=unbuffered)
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/connection.py", line 683, in _read_query_result
+    await result.read()
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/connection.py", line 1164, in read
+    first_packet = await self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/connection.py", line 652, in _read_packet
+    packet.raise_for_error()
+  File "/var/data/python/lib/python3.12/site-packages/pymysql/protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "/var/data/python/lib/python3.12/site-packages/pymysql/err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1146, "Table 'guild.voice_user' doesn't exist")
+2025-10-25 00:01:37,756 | PID:3541 | ERROR | [EXECUTE ERROR] (1146, "Table 'guild.voice_user' doesn't exist")
+Traceback (most recent call last):
+  File "/home/songjag/Màn hình nền/CustomAiomysql/Caiosql/Caiosql.py", line 135, in execute
+    await cur.execute(query, params)
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/cursors.py", line 239, in execute
+    await self._query(query)
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/cursors.py", line 457, in _query
+    await conn.query(q)
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/connection.py", line 469, in query
+    await self._read_query_result(unbuffered=unbuffered)
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/connection.py", line 683, in _read_query_result
+    await result.read()
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/connection.py", line 1164, in read
+    first_packet = await self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/data/python/lib/python3.12/site-packages/aiomysql/connection.py", line 652, in _read_packet
+    packet.raise_for_error()
+  File "/var/data/python/lib/python3.12/site-packages/pymysql/protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "/var/data/python/lib/python3.12/site-packages/pymysql/err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1146, "Table 'guild.voice_user' doesn't exist")
+2025-10-25 00:02:08,912 | PID:3617 | INFO | Connected to MySQL [161.248.147.127:3306] - DB: core
+2025-10-25 00:02:08,913 | PID:3617 | INFO | Saved database config: [core]
+2025-10-25 00:02:08,913 | PID:3617 | INFO | Connection established and config saved.
+2025-10-25 00:02:08,914 | PID:3617 | INFO | Loaded connection from config: Config/configdb.cfg
+2025-10-25 00:02:08,942 | PID:3617 | INFO | [SELECT] 4 rows returned.
+2025-10-25 00:02:09,183 | PID:3617 | INFO | Connected to MySQL [161.248.147.127:3306] - DB: guild
+2025-10-25 00:02:09,184 | PID:3617 | INFO | Saved database config: [guild]
+2025-10-25 00:02:09,184 | PID:3617 | INFO | Connection established and config saved.
+2025-10-25 00:02:09,184 | PID:3617 | INFO | Loaded connection from config: Config/configdb.cfg
+2025-10-25 00:02:09,221 | PID:3617 | INFO | [SELECT] 2 rows returned.

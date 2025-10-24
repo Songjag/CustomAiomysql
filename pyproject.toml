@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "custommsql"
+version = "1.0.0"
+description = "Async MySQL manager using aiomysql with auto-pool, config save, and logging."
+authors = [
+    { name = "Songjag", email = "elysiabot301127@gmail.com" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "aiomysql>=0.2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Songjag"
+Source = "https://github.com/Songjag/CustomAiomysql"
+Issues = "https://github.com/Songjag/CustomAiomysql/issues"
