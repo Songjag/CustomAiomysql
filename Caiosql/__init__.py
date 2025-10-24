@@ -7,7 +7,7 @@ Tác giả: Songjag
 
 import logging
 from .Caiosql import CAioMysql
-msql = CAioMysql()
+msql = CAioMysql
 connect = msql.connect
 execute = msql.execute
 fetchone = msql.fetchone
