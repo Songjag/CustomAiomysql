@@ -149,7 +149,11 @@ class CAioMysql:
                     raise
     async def fetchone(self, query: str, params: Tuple = None):
         rows = await self.execute(query, params)
-        return rows[0] if rows else None
+        if not rows:
+            return None
+        if isinstance(rows, (list, tuple)):
+            return rows[0]
+        return rows
 
     async def fetchall(self, query: str, params: Tuple = None):
         return await self.execute(query, params)
