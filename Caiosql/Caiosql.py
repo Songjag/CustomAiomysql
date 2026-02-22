@@ -9,7 +9,7 @@ import importlib
 from configparser import ConfigParser
 from typing import Optional, Tuple
 from contextlib import asynccontextmanager
-
+import ssl 
 logger = logging.getLogger("msql_logger")
 logger.setLevel(logging.INFO)
 if not logger.hasHandlers():
@@ -22,7 +22,17 @@ if not logger.hasHandlers():
     logger.addHandler(stream)
     logger.addHandler(file)
 REQUIRED_PACKAGES = ["aiohttp", "customtkinter", "aiomysql"]
-
+#
+def ssl_context(cafile: str) -> ssl.SSLContext:
+    ctx = ssl.create_default_context(
+        purpose=ssl.Purpose.SERVER_AUTH,
+        cafile=cafile
+    )
+    ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+    ctx.verify_mode = ssl.CERT_REQUIRED
+    ctx.check_hostname = True
+    ctx.set_ciphers("ECDHE+AESGCM")
+    return ctx
 def install_missing_pack():
     for pkg in REQUIRED_PACKAGES:
         try:
@@ -70,18 +80,28 @@ class CAioMysql:
         except OSError:
             logger.warning("No internet connection detected.")
             return False
-
     @classmethod
     async def connectdb(
         cls,
         host: str, port: int, user: str, password: str, db: str,
-        minsize: int = 1, maxsize: int = 10, autocommit: bool = True
+        minsize: int = 1, maxsize: int = 10, autocommit: bool = True,
+        ssl_cafile:Optional[str]=None,timeout:int=10
     ):
+        ssl_config=ssl_context(ssl_cafile) if ssl_cafile else None
         try:
             pool = await aiomysql.create_pool(
-                host=host, port=port, user=user, password=password, db=db,
-                minsize=minsize, maxsize=maxsize, autocommit=autocommit
-            )
+                                host=host,
+                                port=port,
+                                user=user,
+                                password=password,
+                                db=db,
+                                minsize=minsize,
+                                maxsize=maxsize,
+                                autocommit=autocommit,
+                                ssl=ssl_config,
+                                connect_timeout=timeout,
+                                pool_recycle=3600,
+                            )
             logger.info(f"Connected to MySQL [{host}:{port}] - DB: {db}")
             instance = cls(pool)
             instance.host, instance.user, instance.db = host, user, db
@@ -129,17 +149,32 @@ class CAioMysql:
             raise ConnectionError("Database not connected.")
         for attempt in range(retry + 1):
             try:
+                # async with asyncio.timeout(timeout):
+                #     async with self.session() as cursor:
+                #         cur:aiomysql.Cursor=cursor
+                #         await cur.execute(query, params)
+                        # if query.strip().upper().startswith("SELECT"):
+                        #     rows = await cur.fetchall()
+                        #     logger.info(f"[SELECT] {len(rows)} rows returned.")
+                        #     return rows
+                        #Test New Version
+                        # else:
+                        #     await cur.connection.commit()
+                        #     logger.info(f"[EXECUTE] Rows affected: {cur.rowcount}")
+                        #     return cur.rowcount
+                        # if cur.description is not None:
+                        #     return await cur.fetchall()
+                        # return cur.rowcount
                 async with asyncio.timeout(timeout):
-                    async with self.session() as cursor:
-                        cur:aiomysql.Cursor=cursor
-                        await cur.execute(query, params)
-                        if query.strip().upper().startswith("SELECT"):
-                            rows = await cur.fetchall()
-                            logger.info(f"[SELECT] {len(rows)} rows returned.")
-                            return rows
-                        else:
-                            await cur.connection.commit()
-                            logger.info(f"[EXECUTE] Rows affected: {cur.rowcount}")
+                    async with self.pool.acquire() as connection:
+                        conn:aiomysql.Connection=connection
+                        async with conn.cursor(aiomysql.DictCursor) as cursor:
+                            cur:aiomysql.Cursor=cursor
+                            await cur.execute(query, params)
+
+                            if cur.description is not None:
+                                return await cur.fetchall()
+
                             return cur.rowcount
             except asyncio.TimeoutError:
                 logger.warning(f"[TIMEOUT] Retrying query ({attempt+1}/{retry})")
@@ -147,16 +182,51 @@ class CAioMysql:
                 logger.exception(f"[EXECUTE ERROR] {e}")
                 if attempt >= retry:
                     raise
-    async def fetchone(self, query: str, params: Tuple = None):
-        rows = await self.execute(query, params)
-        if not rows:
-            return None
-        if isinstance(rows, (list, tuple)):
-            return rows[0]
-        return rows
+    async def fetchone(self, query: str, params=None):
+        async with self.pool.acquire() as connnection:
+            conn:aiomysql.Connection=connnection
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                cur:aiomysql.Cursor=cursor
+                await cur.execute(query, params)
+                return await cur.fetchone()
+    async def fetchmany(
+        self,
+        query: str,
+        params=None,
+        size: int = 1000
+    ):
+        if not self.pool:
+            raise ConnectionError("Database not connected.")
 
-    async def fetchall(self, query: str, params: Tuple = None):
-        return await self.execute(query, params)
+        async with self.pool.acquire() as conn:
+            conn:aiomysql.Connection=conn
+            async with conn.cursor(aiomysql.SSCursor) as cur:
+                cur:aiomysql.Cursor=cur
+                await cur.execute(query, params)
+
+                while True:
+                    rows = await cur.fetchmany(size)
+                    if not rows:
+                        break
+                    yield rows
+    async def fetchall(self, query: str, params=None):
+        if not self.pool:
+            raise ConnectionError("Database not connected.")
+
+        async with self.pool.acquire() as conn:
+            conn:aiomysql.Connection=conn   
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(query, params)
+                return await cur.fetchall()
+    async def stream(
+        self,
+        query: str,
+        params=None,
+        chunk_size: int = 1000
+    ):
+        async for chunk in self.fetchmany(query,params,size=chunk_size):
+            for row in chunk:
+                yield row
     async def connected(self, db: str, path: str = "Config/configdb.cfg"):
         config = ConfigParser()
         config.read(path)
