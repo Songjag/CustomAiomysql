@@ -21,8 +21,6 @@ if not logger.hasHandlers():
     file.setFormatter(fmt)
     logger.addHandler(stream)
     logger.addHandler(file)
-REQUIRED_PACKAGES = ["aiohttp", "customtkinter", "aiomysql"]
-#
 def ssl_context(cafile: str) -> ssl.SSLContext:
     ctx = ssl.create_default_context(
         purpose=ssl.Purpose.SERVER_AUTH,
@@ -33,20 +31,6 @@ def ssl_context(cafile: str) -> ssl.SSLContext:
     ctx.check_hostname = True
     ctx.set_ciphers("ECDHE+AESGCM")
     return ctx
-def install_missing_pack():
-    for pkg in REQUIRED_PACKAGES:
-        try:
-            importlib.import_module(pkg)
-        except ImportError:
-            logger.warning(f"Missing package: {pkg}. Installing...")
-            subprocess.run(
-                [sys.executable, "-m", "pip", "install", pkg, "-q"],
-                check=False,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-            logger.info(f"Installed: {pkg}")
-
 async def save_config(name: str, host: str, port: int, user: str, password: str):
     path = "Config/configdb.cfg"
     try:
